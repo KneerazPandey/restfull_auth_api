@@ -55,37 +55,43 @@ class SocialAccount(models.Model):
 
 
 
-class OTP(models.Model):
-    PURPOSE_CHOICES = (
-        ("email_verification", "Email Verification"),
-        ("password_reset", "Password Reset"),
-        ("login", "Login"),
-    )
+# class OTP(models.Model):
+#     PURPOSE_CHOICES = (
+#         ("email_verification", "Email Verification"),
+#         ("password_reset", "Password Reset"),
+#         ("login", "Login"),
+#     )
 
-    email = models.EmailField()
-    code = models.CharField(max_length=6)
+#     email = models.EmailField()
+#     code = models.CharField(max_length=6)
 
-    purpose = models.CharField(max_length=50, choices=PURPOSE_CHOICES)
+#     purpose = models.CharField(max_length=50, choices=PURPOSE_CHOICES)
 
-    is_used = models.BooleanField(default=False)
-    expires_at = models.DateTimeField()
+#     is_used = models.BooleanField(default=False)
+#     expires_at = models.DateTimeField()
 
-    created_at = models.DateTimeField(auto_now_add=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    def is_valid(self):
-        from django.utils import timezone
-        return not self.is_used and self.expires_at > timezone.now()
+#     def is_valid(self):
+#         from django.utils import timezone
+#         return not self.is_used and self.expires_at > timezone.now()
     
 
 
 class AuthLog(models.Model):
     ACTION_CHOICES = (
         ("login", "Login"),
+        ("login_failed", "Login Failed"),
+
         ("logout", "Logout"),
+
         ("otp_sent", "OTP Sent"),
+        ("otp_failed", "OTP Failed"),
         ("otp_verified", "OTP Verified"),
+
+        ("register_completed", "Register Completed"),
+        
         ("social_login", "Social Login"),
-        ("failed_login", "Failed Login"),
     )
 
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
