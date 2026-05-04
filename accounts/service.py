@@ -26,6 +26,7 @@ class AuthService:
             raise ValueError("User already exists with this email.")
         
         otp = AuthService.generate_otp()
+        print(otp)
 
         data = {
             "email": email,
@@ -33,7 +34,7 @@ class AuthService:
             "otp": otp
         }
 
-        cache_key = f'register:{email}'
+        cache_key = f'auth:register:{email}'
         cache.set(cache_key, data, timeout=300) # 5 minutes
 
         AuthService.log_action(
@@ -52,13 +53,14 @@ class AuthService:
         cache_key = f"auth:register:{email}"
 
         data = cache.get(cache_key)
+        print(data)
 
         if not data:
             AuthService.log_action(email, "otp_failed", request=request)
             raise ValueError("OTP expired or invalid request")
 
         if data["otp"] != otp_input:
-            data["attempts"] += 1
+            data["attempts"] = data.get("attempts", 1) + 1
 
             cache.set(cache_key, data, timeout=300)
 
@@ -96,7 +98,7 @@ class AuthService:
         user = authenticate(email=email, password=password)
 
         if not user:
-            AuthService.log(
+            AuthService.log_action(
                 email=email,
                 action="login_failed",
                 request=request
@@ -106,7 +108,7 @@ class AuthService:
 
         refresh = RefreshToken.for_user(user)
 
-        AuthService.log(
+        AuthService.log_action(
             email=email,
             action="login",
             user=user,

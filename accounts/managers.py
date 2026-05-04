@@ -17,7 +17,7 @@ class AuthenticationUserManager(BaseUserManager):
         user.save()
         return user 
     
-    def create_superuser(self, username, email, password, **kwargs):
+    def create_superuser(self, email, password, **kwargs):
         if not password:
             raise ValueError('Superuser must have password')
         

@@ -100,5 +100,9 @@ class AuthLog(models.Model):
     action = models.CharField(max_length=50, choices=ACTION_CHOICES)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(blank=True)
+    metadata = models.JSONField(default=dict, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{ self.email if self.email else "Someone"} has an action of {self.action} on {self.created_at}'
