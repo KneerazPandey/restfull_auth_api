@@ -145,11 +145,11 @@ class GoogleAuthService:
             data = id_token.verify_oauth2_token(
                 token,
                 requests.Request(),
-                settings.GOOGLE_CLIENT_ID
+                audience=settings.GOOGLE_CLIENT_ID
             )
-            
             return data
-        except Exception:
+        except Exception as e:
+            print(f"GOOGLE VERIFICATION ERROR: {e}") 
             return None
 
     @staticmethod
@@ -166,7 +166,7 @@ class GoogleAuthService:
         # 1. Check if social account exists
         social = SocialAccount.objects.filter(
             provider="google",
-            provider_id=google_id
+            provider_uid=google_id
         ).first()
 
         if social:
@@ -179,8 +179,6 @@ class GoogleAuthService:
             if not user:
                 user = User.objects.create(
                     email=email,
-                    username=email,
-                    first_name=name,
                     is_verified=True
                 )
 
@@ -188,7 +186,7 @@ class GoogleAuthService:
             SocialAccount.objects.create(
                 user=user,
                 provider="google",
-                provider_id=google_id,
+                provider_uid=google_id,
                 extra_data=data
             )
 

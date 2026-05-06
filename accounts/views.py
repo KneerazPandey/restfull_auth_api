@@ -2,6 +2,7 @@ from rest_framework.request import Request
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from . service import AuthService, GoogleAuthService
 from . serializers import (
     RegisterSerializer, VerifyOTPSerializer, LoginSerializer, UserSerializer, 
@@ -87,6 +88,7 @@ class LoginView(APIView):
 
 
 class GoogleAuthView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = GoogleAuthSerializer(data=request.data)
@@ -103,6 +105,7 @@ class GoogleAuthView(APIView):
                 )
 
             try:
+                print(google_data)
                 result = GoogleAuthService.login_or_register(
                     google_data,
                     request=request
